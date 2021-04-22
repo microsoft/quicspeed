@@ -88,7 +88,3 @@ endif()
 target_include_directories(quicspeednative PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../inc>
     $<INSTALL_INTERFACE:${include_dest}>)
-
-if (MSVC)
-    target_compile_options(quicspeednative PRIVATE /analyze)
-endif()
