@@ -1,0 +1,5 @@
+LIBRARY quicspeednative
+
+EXPORTS
+    QSInitialize
+    QSShutdown

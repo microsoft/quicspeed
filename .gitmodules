@@ -1,0 +1,3 @@
+[submodule "native/msquic"]
+	path = native/msquic
+	url = https://github.com/microsoft/msquic

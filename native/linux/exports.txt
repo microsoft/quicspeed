@@ -1,0 +1,5 @@
+msquic
+{
+  global: QSInitialize; QSUninitialize;
+  local: *;
+};
