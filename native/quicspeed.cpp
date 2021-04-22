@@ -244,7 +244,8 @@ void OnStreamShutdownComplete()
     uint64_t EndTime = CxPlatTimeUs64();
     uint64_t ElapsedMicroseconds = EndTime - StreamCtx.StartTime;
     uint32_t SendRate = (uint32_t)((StreamCtx.BytesCompleted * 1000 * 1000 * 8) / (1000 * ElapsedMicroseconds));
-    SendRate;
+    UNREFERENCED_PARAMETER(SendRate);
+    //SendRate;
 
     if (StreamCtx.Complete) {
         /*WriteOutput(
