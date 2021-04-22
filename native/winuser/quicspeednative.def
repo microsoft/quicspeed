@@ -1,4 +1,4 @@
-LIBRARY quicspeed
+LIBRARY quicspeednative
 
 EXPORTS
     QSInitialize

@@ -60,35 +60,35 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${QUIC_OUTPUT_DIR})
 add_subdirectory(msquic)
 
 if(WIN32)
-    set(SOURCES quicspeed.cpp winuser/dllmain.c winuser/quicspeed.rc $<TARGET_OBJECTS:MsQuicEtw_Resource>)
+    set(SOURCES quicspeed.cpp winuser/dllmain.c winuser/quicspeednative.rc $<TARGET_OBJECTS:MsQuicEtw_Resource>)
 else()
     set(SOURCES quicspeed.cpp linux/init.c)
 endif()
 
-add_library(quicspeed SHARED ${SOURCES})
+add_library(quicspeednative SHARED ${SOURCES})
 
-set_property(TARGET quicspeed PROPERTY FOLDER "libraries")
+set_property(TARGET quicspeednative PROPERTY FOLDER "libraries")
 
-target_link_libraries(quicspeed PRIVATE core platform perflib inc warnings perfbin.clog)
+target_link_libraries(quicspeednative PRIVATE core platform perflib inc warnings perfbin.clog)
 
 if(WIN32)
     if(QUIC_UWP_BUILD)
-        target_link_libraries(quicspeed PUBLIC OneCoreUAP)
+        target_link_libraries(quicspeednative PUBLIC OneCoreUAP)
     endif()
-    SET_TARGET_PROPERTIES(quicspeed
-        PROPERTIES LINK_FLAGS "/DEF:\"${CMAKE_CURRENT_SOURCE_DIR}/winuser/quicspeed.def\"")
+    SET_TARGET_PROPERTIES(quicspeednative
+        PROPERTIES LINK_FLAGS "/DEF:\"${CMAKE_CURRENT_SOURCE_DIR}/winuser/quicspeednative.def\"")
 elseif (CX_PLATFORM STREQUAL "linux")
-    SET_TARGET_PROPERTIES(quicspeed
+    SET_TARGET_PROPERTIES(quicspeednative
         PROPERTIES LINK_FLAGS "-Wl,--version-script=\"${CMAKE_CURRENT_SOURCE_DIR}/linux/exports.txt\"")
 elseif (CX_PLATFORM STREQUAL "darwin")
-    SET_TARGET_PROPERTIES(quicspeed
+    SET_TARGET_PROPERTIES(quicspeednative
         PROPERTIES LINK_FLAGS "-exported_symbols_list \"${CMAKE_CURRENT_SOURCE_DIR}/darwin/exports.txt\"")
 endif()
 
-target_include_directories(quicspeed PUBLIC
+target_include_directories(quicspeednative PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../inc>
     $<INSTALL_INTERFACE:${include_dest}>)
 
 if (MSVC)
-    target_compile_options(quicspeed PRIVATE /analyze)
+    target_compile_options(quicspeednative PRIVATE /analyze)
 endif()

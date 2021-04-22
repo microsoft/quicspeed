@@ -404,8 +404,8 @@ function CMake-Build {
 
     if ("uwp" -eq $Platform) {
         Copy-Item (Join-Path $BuildDir "msquic" "obj" $Config "msquic.lib") $ArtifactsDir
-        Copy-Item (Join-Path $BuildDir "obj" $Config "quicspeed.lib") $ArtifactsDir
-        Copy-Item (Join-Path $ArtifactsDir quicspeed.dll) (Join-Path $RootDir quicspeed.UWP)
+        Copy-Item (Join-Path $BuildDir "obj" $Config "quicspeednative.lib") $ArtifactsDir
+        Copy-Item (Join-Path $ArtifactsDir quicspeednative.dll) (Join-Path $RootDir quicspeed.UWP)
     }
 }
 
