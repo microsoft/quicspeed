@@ -1,2 +1,2 @@
-_MsQuicOpen
-_MsQuicClose
+_QSInitialize
+_QSUninitialize
