@@ -49,7 +49,9 @@ namespace quicspeed
 
         void TransferResultHandler(ulong SpeedKbps)
         {
-            Device.BeginInvokeOnMainThread(() => { MyLabel.Text = string.Format("{0}", SpeedKbps); });
+            Device.BeginInvokeOnMainThread(() => {
+                MyLabel.Text = string.Format("{0} Kbps", SpeedKbps);
+            });
         }
     }
 }
