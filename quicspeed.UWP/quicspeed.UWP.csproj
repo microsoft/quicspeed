@@ -103,6 +103,27 @@
       <SubType>Designer</SubType>
     </AppxManifest>
   </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <Content Include="..\artifacts\bin\uwp\x86_Release_openssl\quicspeednative.dll">
+      <Link>quicspeednative.dll</Link>
+    </Content>
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <Content Include="..\artifacts\bin\uwp\x64_Release_openssl\quicspeednative.dll">
+      <Link>quicspeednative.dll</Link>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <Content Include="..\artifacts\bin\uwp\x86_Debug_openssl\quicspeednative.dll">
+      <Link>quicspeednative.dll</Link>
+    </Content>
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <Content Include="..\artifacts\bin\uwp\x64_Debug_openssl\quicspeednative.dll">
+      <Link>quicspeednative.dll</Link>
+    </Content>
+  </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\LargeTile.scale-100.png" />
     <Content Include="Assets\LargeTile.scale-200.png" />
@@ -132,7 +153,6 @@
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
     <Content Include="Assets\Wide310x150Logo.scale-400.png" />
     <Content Include="Properties\Default.rd.xml" />
-    <Content Include="quicspeednative.dll" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
