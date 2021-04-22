@@ -3,3 +3,4 @@ LIBRARY quicspeednative
 EXPORTS
     QSInitialize
     QSShutdown
+    QSRunTransfer

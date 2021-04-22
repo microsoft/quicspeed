@@ -24,7 +24,7 @@ void OnStreamShutdownComplete();
 
 bool DownloadTransfer = true;
 bool TimedTransfer = true;
-uint64_t TransferLength = 30 * 1000;
+uint64_t TransferLength = 10 * 1000;
 uint8_t RawBuffer[0x10000];
 QUIC_BUFFER SendBuffer { sizeof(RawBuffer), RawBuffer };
 
@@ -53,14 +53,6 @@ QSInitialize() {
         MsQuic = nullptr;
         return;
     }
-
-    CXPLAT_THREAD_CONFIG ThreadConfig;
-    CxPlatZeroMemory(&ThreadConfig, sizeof(ThreadConfig));
-    ThreadConfig.Name = "QS-Worker";
-    ThreadConfig.Callback = QSWorker;
-    if (QUIC_SUCCEEDED(CxPlatThreadCreate(&ThreadConfig, &WorkerThread))) {
-        WorkerInitialized = true;
-    }
 }
 
 extern "C"
@@ -72,6 +64,32 @@ QSShutdown() {
         CxPlatThreadDelete(&WorkerThread);
     }
     delete MsQuic;
+}
+
+typedef
+void
+(QUIC_API QS_RESULT_CALLBACK)(
+    _In_ uint64_t SpeedKbps
+    );
+
+typedef QS_RESULT_CALLBACK *QS_RESULT_CALLBACK_HANDLER;
+
+QS_RESULT_CALLBACK_HANDLER GlobalHandler;
+
+extern "C"
+void
+QUIC_API
+QSRunTransfer(QS_RESULT_CALLBACK_HANDLER ResultHandler) {
+
+    GlobalHandler = ResultHandler;
+
+    CXPLAT_THREAD_CONFIG ThreadConfig;
+    CxPlatZeroMemory(&ThreadConfig, sizeof(ThreadConfig));
+    ThreadConfig.Name = "QS-Worker";
+    ThreadConfig.Callback = QSWorker;
+    if (QUIC_SUCCEEDED(CxPlatThreadCreate(&ThreadConfig, &WorkerThread))) {
+        WorkerInitialized = true;
+    }
 }
 
 CXPLAT_THREAD_CALLBACK(QSWorker, /* Context */) {
@@ -246,6 +264,8 @@ void OnStreamShutdownComplete()
     uint32_t SendRate = (uint32_t)((StreamCtx.BytesCompleted * 1000 * 1000 * 8) / (1000 * ElapsedMicroseconds));
     UNREFERENCED_PARAMETER(SendRate);
     //SendRate;
+
+    GlobalHandler(SendRate);
 
     if (StreamCtx.Complete) {
         /*WriteOutput(
