@@ -20,37 +20,26 @@ namespace quicspeed
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void QS_RESULT_DELEGATE(ulong SpeedKbps);
 
-        QS_RESULT_DELEGATE MyHandler;
+        QS_RESULT_DELEGATE ResultDelegate;
 
         public MainPage()
         {
             InitializeComponent();
-
-            MyHandler = TransferResultHandler;
-
+            ResultDelegate = TransferResultHandler;
             QSInitialize();
         }
 
-        void Handle_Clicked(object sender, System.EventArgs e)
+        void DownloadClicked(object sender, System.EventArgs e)
         {
-            RunTransfer();
-        }
-
-        void RunTransfer(QS_RESULT_DELEGATE ResultHandler) // TODO - Keep Delegate Alive!!
-        {
-            var ResultHandlerPtr = Marshal.GetFunctionPointerForDelegate(ResultHandler);
-            QSRunTransfer(ResultHandlerPtr);
-        }
-
-        void RunTransfer()
-        {
-            RunTransfer(MyHandler);
+            DownloadButton.IsEnabled = false;
+            QSRunTransfer(Marshal.GetFunctionPointerForDelegate(ResultDelegate));
         }
 
         void TransferResultHandler(ulong SpeedKbps)
         {
             Device.BeginInvokeOnMainThread(() => {
                 MyLabel.Text = string.Format("{0} Kbps", SpeedKbps);
+                DownloadButton.IsEnabled = true;
             });
         }
     }

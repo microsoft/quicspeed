@@ -7,13 +7,13 @@
         <Frame BackgroundColor="#2196F3" Padding="24" CornerRadius="0">
             <Label Text="Welcome to MsQuic Speed Test!" HorizontalTextAlignment="Center" TextColor="White" FontSize="36"/>
         </Frame>
-        <Button Text="Run Download" Clicked="Handle_Clicked" />
-        <Label FontSize="16" Padding="30,24,30,0">
+        <Button x:Name="DownloadButton" Text="Run Download" Clicked="DownloadClicked" />
+        <Label Padding="30,24,30,0">
             <Label.FormattedText>
                 <FormattedString>
                     <FormattedString.Spans>
-                        <Span Text="Results: "/>
-                        <Span x:Name="MyLabel" Text="N/A" FontAttributes="Bold"/>
+                        <Span Text="Results: " FontSize="20"/>
+                        <Span x:Name="MyLabel" Text="N/A" FontAttributes="Bold" FontSize="24"/>
                     </FormattedString.Spans>
                 </FormattedString>
             </Label.FormattedText>

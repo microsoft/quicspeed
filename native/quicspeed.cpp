@@ -51,7 +51,6 @@ QSInitialize() {
     if (QUIC_FAILED(MsQuic->GetInitStatus())) {
         delete MsQuic;
         MsQuic = nullptr;
-        return;
     }
 }
 
@@ -82,6 +81,7 @@ QUIC_API
 QSRunTransfer(QS_RESULT_CALLBACK_HANDLER ResultHandler) {
 
     GlobalHandler = ResultHandler;
+    CxPlatEventReset(AllDoneEvent);
 
     CXPLAT_THREAD_CONFIG ThreadConfig;
     CxPlatZeroMemory(&ThreadConfig, sizeof(ThreadConfig));
@@ -128,6 +128,8 @@ CXPLAT_THREAD_CALLBACK(QSWorker, /* Context */) {
     }
 
     StreamScope Stream;
+    CxPlatZeroMemory(&StreamCtx, sizeof(StreamCtx));
+    StreamCtx.IdealSendBuffer = 0x40000;
     StreamCtx.StartTime = CxPlatTimeUs64();
     if (QUIC_FAILED(MsQuic->StreamOpen(Connection, QUIC_STREAM_OPEN_FLAG_NONE, StreamCallback, nullptr, &Stream.Handle))) {
         return 0;
