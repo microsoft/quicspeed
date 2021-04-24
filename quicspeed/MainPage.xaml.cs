@@ -1,10 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
+﻿/*++
+
+    Copyright (c) Microsoft Corporation.
+    Licensed under the MIT License.
+
+--*/
+
+using System;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace quicspeed

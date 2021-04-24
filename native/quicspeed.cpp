@@ -15,7 +15,7 @@ Abstract:
 const MsQuicApi* MsQuic;
 bool WorkerInitialized;
 CXPLAT_THREAD WorkerThread;
-EventScope AllDoneEvent(true);
+CxPlatEvent AllDoneEvent(true);
 CXPLAT_THREAD_CALLBACK(QSWorker, Context);
 QUIC_CONNECTION_CALLBACK ConnectionCallback;
 QUIC_STREAM_CALLBACK StreamCallback;
@@ -59,7 +59,7 @@ void
 QUIC_API
 QSShutdown() {
     if (WorkerInitialized) {
-        CxPlatEventSet(AllDoneEvent);
+        AllDoneEvent.Set();
         CxPlatThreadDelete(&WorkerThread);
     }
     delete MsQuic;
@@ -81,7 +81,7 @@ QUIC_API
 QSRunTransfer(QS_RESULT_CALLBACK_HANDLER ResultHandler) {
 
     GlobalHandler = ResultHandler;
-    CxPlatEventReset(AllDoneEvent);
+    AllDoneEvent.Reset();
 
     CXPLAT_THREAD_CONFIG ThreadConfig;
     CxPlatZeroMemory(&ThreadConfig, sizeof(ThreadConfig));
@@ -110,8 +110,8 @@ CXPLAT_THREAD_CALLBACK(QSWorker, /* Context */) {
         return 0;
     }
 
-    ConnectionScope Connection;
-    if (QUIC_FAILED(MsQuic->ConnectionOpen(Registration, ConnectionCallback, nullptr, &Connection.Handle))) {
+    MsQuicConnection Connection(Registration, ConnectionCallback);
+    if (QUIC_FAILED(Connection.GetInitStatus())) {
         return 0;
     }
 
@@ -127,11 +127,12 @@ CXPLAT_THREAD_CALLBACK(QSWorker, /* Context */) {
         }
     }
 
-    StreamScope Stream;
     CxPlatZeroMemory(&StreamCtx, sizeof(StreamCtx));
     StreamCtx.IdealSendBuffer = 0x40000;
     StreamCtx.StartTime = CxPlatTimeUs64();
-    if (QUIC_FAILED(MsQuic->StreamOpen(Connection, QUIC_STREAM_OPEN_FLAG_NONE, StreamCallback, nullptr, &Stream.Handle))) {
+
+    MsQuicStream Stream(Connection, QUIC_STREAM_OPEN_FLAG_NONE, StreamCallback);
+    if (QUIC_FAILED(Stream.GetInitStatus())) {
         return 0;
     }
     if (QUIC_FAILED(MsQuic->StreamStart(Stream, QUIC_STREAM_START_FLAG_ASYNC))) {
@@ -149,11 +150,11 @@ CXPLAT_THREAD_CALLBACK(QSWorker, /* Context */) {
         SendData(Stream);
     }
 
-    if (QUIC_FAILED(MsQuic->ConnectionStart(Connection, Config, QUIC_ADDRESS_FAMILY_UNSPEC, "msquic.net", 4450))) {
+    if (QUIC_FAILED(Connection.Start(Config, "msquic.net", 4450))) {
         return 0;
     }
 
-    CxPlatEventWaitForever(AllDoneEvent);
+    AllDoneEvent.WaitForever();
 
     CXPLAT_THREAD_RETURN(0);
 }
@@ -287,5 +288,5 @@ void OnStreamShutdownComplete()
         //WriteOutput("Error: Did not complete any bytes! Failed to connect?\n");
     }
 
-    CxPlatEventSet(AllDoneEvent);
+    AllDoneEvent.Set();
 }
